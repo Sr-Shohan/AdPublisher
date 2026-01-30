@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { PARAMS_INFO } from "@shared/schema";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AdDisplay } from "@/components/AdDisplay";
-import { useConsent } from "@/hooks/use-consent";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Trash2, Play, Settings, Info, Settings2, LayoutGrid } from "lucide-react";
+import { Plus, Trash2, Play, Info, Settings2, LayoutGrid } from "lucide-react";
 
 // Define form schema
 const formSchema = z.object({
@@ -31,7 +30,30 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Home() {
   const [adsUrls, setAdsUrls] = useState<{ url: string, w: number, h: number }[]>([]);
-  const { resetConsent } = useConsent();
+  const [isSystemActive, setIsSystemActive] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkSystem = async () => {
+      try {
+        await fetch("https://ads.eskimi.com/getad/", { mode: "no-cors" });
+        if (isMounted) {
+          setIsSystemActive(true);
+        }
+      } catch {
+        if (isMounted) {
+          setIsSystemActive(false);
+        }
+      }
+    };
+
+    checkSystem();
+    const intervalId = window.setInterval(checkSystem, 60000);
+    return () => {
+      isMounted = false;
+      window.clearInterval(intervalId);
+    };
+  }, []);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -100,33 +122,46 @@ export default function Home() {
         <div className="flex-1 flex flex-col overflow-hidden relative">
           
           <ScrollArea className="flex-1">
-            <div className="p-4 md:p-12 max-w-7xl mx-auto space-y-12">
+            <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
               
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+              <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-3">
                 <div className="flex flex-col gap-2">
-                  <h1 className="text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-br from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent">
-                    Ad Generator
+                  <h1 className="text-2xl md:text-4xl font-black tracking-tight bg-gradient-to-br from-purple-500 via-purple-400 to-purple-300 bg-clip-text text-transparent">
+                    DSP Publisher Lab
                   </h1>
-                  <p className="text-muted-foreground text-lg max-w-2xl font-medium opacity-80">
-                    Construct and test ad placements with Eskimi DSP's powerful configuration suite.
+                  <p className="text-muted-foreground text-base max-w-2xl font-medium opacity-80">
+                    Build bid requests. Preview ads fast.
                   </p>
                 </div>
                 <div className="flex items-center gap-3 bg-background/40 backdrop-blur-md p-2 rounded-2xl border border-border/50 shadow-sm">
-                  <div className="px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-bold flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    System Active
-                  </div>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl hover:bg-background/60" onClick={resetConsent} title="Reset Settings">
-                    <Settings className="w-5 h-5" />
-                  </Button>
+                  {isSystemActive !== null && (
+                    <div
+                      className={
+                        "px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 " +
+                        (isSystemActive
+                          ? "bg-primary/10 text-primary"
+                          : "bg-destructive/10 text-destructive")
+                      }
+                    >
+                      <div
+                        className={
+                          "w-2 h-2 rounded-full " +
+                          (isSystemActive
+                            ? "bg-primary animate-pulse"
+                            : "bg-destructive")
+                        }
+                      />
+                      {isSystemActive ? "System Active" : "System Offline"}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
                 {/* Configuration Panel */}
-                <Card className="xl:col-span-1 glass-card overflow-hidden h-fit xl:sticky xl:top-8 transition-all hover:shadow-2xl hover:shadow-primary/5 group/card">
+                <Card className="xl:col-span-2 glass-card overflow-hidden h-fit xl:sticky xl:top-3 transition-all hover:shadow-2xl hover:shadow-primary/5 group/card">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
-                  <CardHeader className="relative border-b border-border/50 pb-6">
+                  <CardHeader className="relative border-b border-border/50 pb-4">
                     <CardTitle className="text-xl flex items-center gap-3">
                       <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover/card:scale-110 transition-transform">
                         <Settings2 className="w-5 h-5" />
@@ -135,15 +170,15 @@ export default function Home() {
                     </CardTitle>
                     <CardDescription>Fine-tune your ad request parameters.</CardDescription>
                   </CardHeader>
-                  <CardContent className="p-8 space-y-8 relative">
-                    <div className="grid grid-cols-2 gap-6">
+                  <CardContent className="p-5 space-y-5 relative">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2.5">
                         <Label htmlFor="width" className="text-sm font-semibold opacity-70">Width (px)</Label>
                         <Input 
                           id="width" 
                           type="number" 
                           {...form.register("width")} 
-                          className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
+                          className="h-11 font-mono bg-muted/30 border-border/60 focus:border-primary/40 focus:ring-primary/20 transition-all rounded-xl"
                         />
                       </div>
                       <div className="space-y-2.5">
@@ -152,17 +187,17 @@ export default function Home() {
                           id="height" 
                           type="number" 
                           {...form.register("height")}
-                          className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
+                          className="h-11 font-mono bg-muted/30 border-border/60 focus:border-primary/40 focus:ring-primary/20 transition-all rounded-xl"
                         />
                       </div>
                       <div className="space-y-2.5 col-span-2">
                         <Label htmlFor="ads" className="text-sm font-semibold opacity-70">Placements</Label>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                           <Input 
                             id="ads" 
                             type="number" 
                             {...form.register("ads")}
-                            className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
+                            className="h-11 font-mono bg-muted/30 border-border/60 focus:border-primary/40 focus:ring-primary/20 transition-all rounded-xl"
                           />
                           <div className="px-3 py-1 rounded-full bg-muted/50 border text-[10px] font-bold uppercase tracking-widest opacity-60">Max 20</div>
                         </div>
@@ -171,8 +206,8 @@ export default function Home() {
 
                     <Separator className="bg-border/50" />
 
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between gap-3">
                         <Label className="text-base font-bold">Custom Parameters</Label>
                         <Button 
                           type="button" 
@@ -261,24 +296,21 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex gap-3 pt-3">
                       <Button 
-                        className="flex-1 h-12 rounded-2xl bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-base"
+                        className="flex-1 h-11 rounded-2xl bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-base"
                         onClick={form.handleSubmit(handleGenerate)}
                       >
                         <Play className="w-5 h-5 mr-3 fill-current" />
                         Generate Ads
                       </Button>
                       
-                      <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-border/50 hover:bg-muted/50 transition-colors hidden" title="Reset Cookie Consent" onClick={resetConsent}>
-                        <Settings className="w-5 h-5" />
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Ads Display Area */}
-                <div className="xl:col-span-2 space-y-8">
+                <div className="xl:col-span-3 space-y-6">
                   <div className="flex items-end justify-between px-2">
                     <div>
                       <h2 className="text-3xl font-bold tracking-tight">Preview</h2>
@@ -292,7 +324,7 @@ export default function Home() {
                   </div>
 
                   {adsUrls.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center min-h-[500px] border-2 border-dashed rounded-[2.5rem] bg-muted/5 border-border/50 group/preview transition-colors hover:border-primary/20">
+                    <div className="flex flex-col items-center justify-center min-h-[320px] border-2 border-dashed rounded-[2.5rem] bg-muted/5 border-border/50 group/preview transition-colors hover:border-primary/20">
                       <div className="p-6 bg-primary/5 rounded-[2rem] mb-6 group-hover/preview:scale-110 transition-transform">
                         <LayoutGrid className="w-12 h-12 text-primary opacity-40" />
                       </div>
@@ -302,7 +334,7 @@ export default function Home() {
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-start overflow-x-auto pb-2">
                       {adsUrls.map((ad, i) => (
                         <AdDisplay 
                           key={`${i}-${ad.url}`}

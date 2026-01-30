@@ -28,7 +28,7 @@ export function AdDisplay({ url, width, height, index }: AdDisplayProps) {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: index * 0.1 }}
     >
-      <Card className="overflow-hidden bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-colors duration-300 shadow-sm hover:shadow-md">
+      <Card className="w-fit max-w-none overflow-visible bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-colors duration-300 shadow-sm hover:shadow-md">
         <div className="p-6 flex flex-col items-center gap-6">
           <div 
             className="relative bg-white shadow-inner rounded-md overflow-hidden border border-border"
