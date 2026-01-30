@@ -2,11 +2,9 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { PARAMS_INFO, insertConfigurationSchema, type Configuration } from "@shared/schema";
+import { PARAMS_INFO } from "@shared/schema";
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { AdDisplay } from "@/components/AdDisplay";
-import { ConfigurationList } from "@/components/ConfigurationList";
-import { useCreateConfiguration } from "@/hooks/use-configurations";
 import { useConsent } from "@/hooks/use-consent";
 
 import { Button } from "@/components/ui/button";
@@ -16,10 +14,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Trash2, Play, Save, History, LayoutGrid, Settings, Info, Settings2 } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Plus, Trash2, Play, Settings, Info, Settings2, LayoutGrid } from "lucide-react";
 
 // Define form schema
 const formSchema = z.object({
@@ -36,12 +31,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Home() {
   const [adsUrls, setAdsUrls] = useState<{ url: string, w: number, h: number }[]>([]);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [configName, setConfigName] = useState("");
   const { resetConsent } = useConsent();
   
-  const createConfigMutation = useCreateConfiguration();
-
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,7 +66,8 @@ export default function Home() {
     queryParams.append("h", data.height.toString());
     queryParams.append("audit", "1");
     queryParams.append("domain", "demo.eskimi.com");
-    queryParams.append("page", window.location.href); // Should be encoded by URLSearchParams automatically
+    // Fix: Use the hardcoded demo page URL to avoid 'invalidDomain' error
+    queryParams.append("page", "https://demo.eskimi.com/publisher/");
 
     // Add custom params
     data.customParams.forEach(param => {
@@ -97,43 +89,6 @@ export default function Home() {
     setAdsUrls(urls);
   };
 
-  const handleSaveConfig = () => {
-    if (!configName) return;
-    
-    const formValues = form.getValues();
-    const customParamsObj = formValues.customParams.reduce((acc, curr) => {
-      acc[curr.key] = curr.value;
-      return acc;
-    }, {} as Record<string, string>);
-
-    createConfigMutation.mutate({
-      name: configName,
-      ads: formValues.ads,
-      width: formValues.width,
-      height: formValues.height,
-      customParams: customParamsObj
-    }, {
-      onSuccess: () => {
-        setSaveDialogOpen(false);
-        setConfigName("");
-      }
-    });
-  };
-
-  const loadConfiguration = (config: Configuration) => {
-    const customParamsArray = Object.entries(config.customParams as Record<string, string>).map(([key, value]) => ({
-      key,
-      value
-    }));
-
-    form.reset({
-      ads: config.ads,
-      width: config.width,
-      height: config.height,
-      customParams: customParamsArray
-    });
-  };
-
   // Helper to get info for a selected param key
   const getParamInfo = (key: string) => PARAMS_INFO.find(p => p.key === key);
 
@@ -141,57 +96,9 @@ export default function Home() {
     <div className="min-h-screen bg-background font-sans">
       <div className="flex h-screen overflow-hidden">
         
-        {/* Sidebar - Desktop */}
-        <div className="hidden lg:flex w-80 flex-col border-r bg-muted/10 backdrop-blur-xl">
-          <div className="p-6 border-b border-border/50">
-            <h1 className="text-xl font-bold font-display bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-              Ad Generator
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">Eskimi DSP Client Demo</p>
-          </div>
-          
-          <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="px-6 py-4">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
-                <History className="w-3 h-3" /> Saved Presets
-              </h2>
-              <ConfigurationList onLoad={loadConfiguration} />
-            </div>
-          </div>
-
-          <div className="p-4 border-t border-border/50">
-            <Button variant="outline" className="w-full justify-start text-xs" onClick={resetConsent}>
-              <Settings className="w-3.5 h-3.5 mr-2" />
-              Reset Cookie Consent
-            </Button>
-          </div>
-        </div>
-
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           
-          {/* Mobile Header */}
-          <div className="lg:hidden p-4 border-b flex items-center justify-between bg-background/80 backdrop-blur-md sticky top-0 z-10">
-            <h1 className="font-bold font-display text-lg">Ad Generator</h1>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon"><LayoutGrid className="w-5 h-5" /></Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="w-80 p-0">
-                <div className="p-6 border-b">
-                  <SheetTitle>Saved Presets</SheetTitle>
-                  <SheetDescription>Load your saved configurations</SheetDescription>
-                </div>
-                <ConfigurationList onLoad={loadConfiguration} />
-                <div className="p-4 border-t mt-auto">
-                   <Button variant="outline" className="w-full" onClick={resetConsent}>
-                    Reset Cookie Consent
-                  </Button>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-
           <ScrollArea className="flex-1">
             <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
               
@@ -337,36 +244,9 @@ export default function Home() {
                         Generate Ads
                       </Button>
                       
-                      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline" className="px-3" title="Save Configuration">
-                            <Save className="w-4 h-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Save Configuration</DialogTitle>
-                            <DialogDescription>
-                              Give your current settings a name to easily load them later.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="py-4">
-                            <Label htmlFor="configName" className="mb-2 block">Name</Label>
-                            <Input
-                              id="configName"
-                              value={configName}
-                              onChange={(e) => setConfigName(e.target.value)}
-                              placeholder="e.g. Mobile Banner Test"
-                            />
-                          </div>
-                          <DialogFooter>
-                            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
-                            <Button onClick={handleSaveConfig} disabled={!configName || createConfigMutation.isPending}>
-                              {createConfigMutation.isPending ? "Saving..." : "Save"}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <Button variant="outline" className="px-3" title="Reset Cookie Consent" onClick={resetConsent}>
+                        <Settings className="w-4 h-4" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

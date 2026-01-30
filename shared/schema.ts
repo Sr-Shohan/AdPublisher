@@ -2,24 +2,6 @@ import { pgTable, text, serial, integer, timestamp, jsonb } from "drizzle-orm/pg
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const configurations = pgTable("configurations", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  ads: integer("ads").notNull().default(1),
-  width: integer("width").notNull().default(300),
-  height: integer("height").notNull().default(250),
-  customParams: jsonb("custom_params").$type<Record<string, string>>().notNull().default({}),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const insertConfigurationSchema = createInsertSchema(configurations).omit({ 
-  id: true, 
-  createdAt: true 
-});
-
-export type Configuration = typeof configurations.$inferSelect;
-export type InsertConfiguration = z.infer<typeof insertConfigurationSchema>;
-
 // Custom Parameter Type Definition
 export type CustomParamInfo = {
   object: string;
@@ -81,6 +63,6 @@ export const PARAMS_INFO: CustomParamInfo[] = [
 ];
 
 export const CONSENT_STRINGS = {
-  acceptedAll: 'CQGRA8sQGRA8sAcAAAENCZCMAP_AAH_AABaYGXQAgF5gMuAy6AEAvMBlwAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A',
+  acceptedAll: 'CQGRA8sQGRA8sAcAAAENCZCMAP_AAH_AABaYGXQAgF5gMuAy6AEAvMBlwAA.II7Nd_X__b_9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A',
   acceptedNecessary: 'CQF_ZFyQF_ZFyAcAAAENCZCMAP_AAH_AABaYGXQAQGXAZdABAZcAAA.II7Nd_X__bX9n-_7_6ft0eY1f9_r37uQzDhfNs-8F3L_W_LwX32E7NF36tq4KmR4ku1bBIQNtHMnUDUmxaolVrzHsak2cpyNKJ_JkknsZe2dYGF9Pn9lD-YKZ7_5_9_f52T_9_9_-39z3_9f___dv_-__-vjf_599n_v9fV_78_Kf9______-____________8A'
 };
