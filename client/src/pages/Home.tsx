@@ -93,84 +93,96 @@ export default function Home() {
   const getParamInfo = (key: string) => PARAMS_INFO.find(p => p.key === key);
 
   return (
-    <div className="min-h-screen bg-background font-sans">
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/20">
       <div className="flex h-screen overflow-hidden">
         
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden relative">
           
           <ScrollArea className="flex-1">
-            <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+            <div className="p-4 md:p-12 max-w-7xl mx-auto space-y-12">
               
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              <div className="flex flex-col gap-2 mb-4">
+                <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                  Ad Generator
+                </h1>
+                <p className="text-muted-foreground text-lg max-w-2xl">
+                  Construct and test ad placements with Eskimi DSP's powerful configuration suite.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 {/* Configuration Panel */}
-                <Card className="xl:col-span-1 shadow-lg border-border/60 h-fit xl:sticky xl:top-8">
-                  <CardHeader className="bg-muted/30 border-b border-border/50 pb-4">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Settings2 className="w-5 h-5 text-primary" />
+                <Card className="xl:col-span-1 glass-card overflow-hidden h-fit xl:sticky xl:top-8 transition-all hover:shadow-2xl hover:shadow-primary/5 group/card">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
+                  <CardHeader className="relative border-b border-border/50 pb-6">
+                    <CardTitle className="text-xl flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-primary/10 text-primary group-hover/card:scale-110 transition-transform">
+                        <Settings2 className="w-5 h-5" />
+                      </div>
                       Configuration
                     </CardTitle>
-                    <CardDescription>Set parameters for the ad request.</CardDescription>
+                    <CardDescription>Fine-tune your ad request parameters.</CardDescription>
                   </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="width">Width</Label>
+                  <CardContent className="p-8 space-y-8 relative">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2.5">
+                        <Label htmlFor="width" className="text-sm font-semibold opacity-70">Width (px)</Label>
                         <Input 
                           id="width" 
                           type="number" 
                           {...form.register("width")} 
-                          className="font-mono bg-muted/20 focus:bg-background transition-colors"
+                          className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="height">Height</Label>
+                      <div className="space-y-2.5">
+                        <Label htmlFor="height" className="text-sm font-semibold opacity-70">Height (px)</Label>
                         <Input 
                           id="height" 
                           type="number" 
                           {...form.register("height")}
-                          className="font-mono bg-muted/20 focus:bg-background transition-colors"
+                          className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
                         />
                       </div>
-                      <div className="space-y-2 col-span-2">
-                        <Label htmlFor="ads">Number of Ads</Label>
+                      <div className="space-y-2.5 col-span-2">
+                        <Label htmlFor="ads" className="text-sm font-semibold opacity-70">Placements</Label>
                         <div className="flex items-center gap-4">
                           <Input 
                             id="ads" 
                             type="number" 
                             {...form.register("ads")}
-                            className="font-mono bg-muted/20 focus:bg-background transition-colors"
+                            className="h-11 font-mono bg-muted/30 border-transparent focus:border-primary/30 focus:ring-primary/20 transition-all rounded-xl"
                           />
-                          <span className="text-xs text-muted-foreground whitespace-nowrap">Max 20</span>
+                          <div className="px-3 py-1 rounded-full bg-muted/50 border text-[10px] font-bold uppercase tracking-widest opacity-60">Max 20</div>
                         </div>
                       </div>
                     </div>
 
-                    <Separator />
+                    <Separator className="bg-border/50" />
 
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       <div className="flex items-center justify-between">
-                        <Label>Custom Parameters</Label>
+                        <Label className="text-base font-bold">Custom Parameters</Label>
                         <Button 
                           type="button" 
-                          variant="outline" 
+                          variant="secondary" 
                           size="sm" 
                           onClick={() => append({ key: "", value: "" })}
-                          className="h-8 px-3"
+                          className="h-9 px-4 rounded-full font-semibold hover:scale-105 transition-transform bg-primary/5 text-primary hover:bg-primary/10 border-primary/10"
                         >
-                          <Plus className="w-4 h-4 mr-1.5" /> Add Parameter
+                          <Plus className="w-4 h-4 mr-2" /> Add Param
                         </Button>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {fields.map((field, index) => {
                           const currentKey = form.watch(`customParams.${index}.key`);
                           const paramInfo = getParamInfo(currentKey);
 
                           return (
-                            <div key={field.id} className="group relative bg-muted/20 p-3 rounded-lg border border-border/50 hover:border-primary/20 transition-colors">
-                              <div className="flex gap-2 mb-2">
-                                <div className="flex-1 min-w-0">
+                            <div key={field.id} className="group relative bg-muted/20 p-4 rounded-2xl border border-border/50 hover:border-primary/20 transition-all duration-300">
+                              <div className="flex gap-3 mb-3">
+                                <div className="flex-1">
                                   <Select
                                     value={currentKey}
                                     onValueChange={(value) => {
@@ -181,15 +193,15 @@ export default function Home() {
                                       }
                                     }}
                                   >
-                                    <SelectTrigger className="h-8 text-xs">
-                                      <SelectValue placeholder="Parameter" />
+                                    <SelectTrigger className="h-10 rounded-xl border-transparent bg-background/50 focus:ring-primary/20">
+                                      <SelectValue placeholder="Key" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-2xl shadow-2xl">
                                       {Object.entries(groupedParams).map(([group, params]) => (
                                         <SelectGroup key={group}>
-                                          <SelectLabel>{group}</SelectLabel>
+                                          <SelectLabel className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{group}</SelectLabel>
                                           {params.sort((a,b) => a.key.localeCompare(b.key)).map(p => (
-                                            <SelectItem key={p.key} value={p.key} className="text-xs">
+                                            <SelectItem key={p.key} value={p.key} className="rounded-lg mx-1 my-0.5 px-3">
                                               {p.key}
                                             </SelectItem>
                                           ))}
@@ -202,24 +214,24 @@ export default function Home() {
                                   type="button"
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 text-muted-foreground hover:text-destructive shrink-0"
+                                  className="h-10 w-10 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
                                   onClick={() => remove(index)}
                                 >
-                                  <Trash2 className="w-3 h-3" />
+                                  <Trash2 className="w-4 h-4" />
                                 </Button>
                               </div>
                               
                               <Input
                                 placeholder={paramInfo?.default || "Value"}
                                 {...form.register(`customParams.${index}.value`)}
-                                className="h-8 text-xs font-mono bg-white/50"
+                                className="h-10 font-mono bg-background/50 border-transparent focus:border-primary/20 rounded-xl"
                               />
                               
                               {paramInfo && (
-                                <div className="mt-2 flex items-start gap-1.5 text-[10px] text-muted-foreground bg-blue-50/50 dark:bg-blue-950/20 p-1.5 rounded text-blue-600 dark:text-blue-300">
-                                  <Info className="w-3 h-3 shrink-0 mt-0.5" />
+                                <div className="mt-3 flex items-start gap-2.5 text-[11px] leading-relaxed text-muted-foreground bg-primary/5 p-3 rounded-xl border border-primary/5">
+                                  <Info className="w-3.5 h-3.5 shrink-0 mt-0.5 text-primary/70" />
                                   <span>
-                                    <span className="font-semibold">{paramInfo.comment}</span>. Example: {paramInfo.example}
+                                    <span className="font-bold text-foreground/80">{paramInfo.comment}</span>. Example: <span className="font-mono text-primary/80">{paramInfo.example}</span>
                                   </span>
                                 </div>
                               )}
@@ -228,55 +240,55 @@ export default function Home() {
                         })}
                         
                         {fields.length === 0 && (
-                          <div className="text-center py-6 border border-dashed rounded-lg bg-muted/10">
-                            <p className="text-xs text-muted-foreground">No custom parameters added</p>
+                          <div className="text-center py-10 border-2 border-dashed border-border/50 rounded-3xl bg-muted/10">
+                            <p className="text-sm font-medium text-muted-foreground opacity-60 italic">No custom parameters added</p>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex gap-3 pt-2">
+                    <div className="flex gap-4 pt-4">
                       <Button 
-                        className="flex-1 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-md shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="flex-1 h-12 rounded-2xl bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-base"
                         onClick={form.handleSubmit(handleGenerate)}
                       >
-                        <Play className="w-4 h-4 mr-2 fill-current" />
+                        <Play className="w-5 h-5 mr-3 fill-current" />
                         Generate Ads
                       </Button>
                       
-                      <Button variant="outline" className="px-3" title="Reset Cookie Consent" onClick={resetConsent}>
-                        <Settings className="w-4 h-4" />
+                      <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-border/50 hover:bg-muted/50 transition-colors" title="Reset Cookie Consent" onClick={resetConsent}>
+                        <Settings className="w-5 h-5" />
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Ads Display Area */}
-                <div className="xl:col-span-2 space-y-6">
-                  <div className="flex items-center justify-between">
+                <div className="xl:col-span-2 space-y-8">
+                  <div className="flex items-end justify-between px-2">
                     <div>
-                      <h2 className="text-2xl font-bold font-display text-foreground">Preview</h2>
-                      <p className="text-muted-foreground">Generated ad placements</p>
+                      <h2 className="text-3xl font-bold tracking-tight">Preview</h2>
+                      <p className="text-muted-foreground mt-1">Live visualization of generated placements</p>
                     </div>
                     {adsUrls.length > 0 && (
-                      <span className="text-sm font-mono bg-primary/10 text-primary px-3 py-1 rounded-full">
+                      <span className="text-xs font-black uppercase tracking-widest bg-primary/10 text-primary px-4 py-2 rounded-full border border-primary/10">
                         {adsUrls.length} Result{adsUrls.length !== 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
 
                   {adsUrls.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-[400px] border-2 border-dashed rounded-2xl bg-muted/5 text-muted-foreground">
-                      <div className="p-4 bg-muted/20 rounded-full mb-4">
-                        <LayoutGrid className="w-8 h-8 opacity-50" />
+                    <div className="flex flex-col items-center justify-center min-h-[500px] border-2 border-dashed rounded-[2.5rem] bg-muted/5 border-border/50 group/preview transition-colors hover:border-primary/20">
+                      <div className="p-6 bg-primary/5 rounded-[2rem] mb-6 group-hover/preview:scale-110 transition-transform">
+                        <LayoutGrid className="w-12 h-12 text-primary opacity-40" />
                       </div>
-                      <h3 className="text-lg font-medium text-foreground">No ads generated yet</h3>
-                      <p className="text-sm mt-1 max-w-xs text-center">
-                        Configure your settings on the left and click "Generate Ads" to see the preview.
+                      <h3 className="text-2xl font-bold tracking-tight">Ready for deployment</h3>
+                      <p className="text-muted-foreground mt-2 max-w-sm text-center text-base">
+                        Your ad results will appear here after clicking <span className="font-bold text-foreground">Generate Ads</span>.
                       </p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {adsUrls.map((ad, i) => (
                         <AdDisplay 
                           key={`${i}-${ad.url}`}

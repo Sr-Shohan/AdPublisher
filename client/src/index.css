@@ -33,46 +33,61 @@
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
   
-  --radius: 0.75rem;
+  --radius: 1rem;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+  --background: 224 71% 4%;
+  --foreground: 213 31% 91%;
   
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
+  --primary: 263.4 70% 50.4%;
+  --primary-foreground: 210 40% 98%;
   
-  --secondary: 217.2 32.6% 17.5%;
+  --secondary: 222.2 47.4% 11.2%;
   --secondary-foreground: 210 40% 98%;
   
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: 223 47% 11%;
+  --muted-foreground: 215.4 16.3% 56.9%;
   
-  --accent: 217.2 32.6% 17.5%;
+  --accent: 216 34% 17%;
   --accent-foreground: 210 40% 98%;
   
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 210 40% 98%;
   
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
+  --border: 216 34% 17%;
+  --input: 216 34% 17%;
+  --ring: 263.4 70% 50.4%;
+  --popover: 224 71% 4%;
+  --popover-foreground: 213 31% 91%;
 }
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border/50;
   }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(263, 70%, 50%, 0.05) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(221, 83%, 53%, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  .dark body {
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(263, 70%, 50%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(221, 83%, 53%, 0.1) 0px, transparent 50%);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    @apply tracking-tight;
+    @apply tracking-tight font-bold;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-background/60 backdrop-blur-xl border border-border/50 shadow-xl;
   }
 }
 
