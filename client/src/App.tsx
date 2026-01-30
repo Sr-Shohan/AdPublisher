@@ -2,7 +2,7 @@ import { Switch, Route, Router } from "wouter";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 
-function Router() {
+function AppRouter() {
   return (
     <Router base={import.meta.env.BASE_URL}>
       <Switch>
@@ -15,7 +15,7 @@ function Router() {
 
 function App() {
   return (
-    <Router />
+    <AppRouter />
   );
 }
 
