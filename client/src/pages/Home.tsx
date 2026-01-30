@@ -154,11 +154,11 @@ export default function Home() {
                         <Button 
                           type="button" 
                           variant="outline" 
-                          size="xs" 
+                          size="sm" 
                           onClick={() => append({ key: "", value: "" })}
-                          className="h-7 text-xs"
+                          className="h-8 px-3"
                         >
-                          <Plus className="w-3 h-3 mr-1" /> Add
+                          <Plus className="w-4 h-4 mr-1.5" /> Add Parameter
                         </Button>
                       </div>
 
