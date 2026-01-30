@@ -30,6 +30,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function Home() {
   const [adsUrls, setAdsUrls] = useState<{ url: string, w: number, h: number }[]>([]);
+  const [requestId, setRequestId] = useState(0);
   const [isSystemActive, setIsSystemActive] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -98,6 +99,8 @@ export default function Home() {
       }
     });
 
+    const refreshId = requestId + 1;
+    queryParams.append("ts", refreshId.toString());
     const finalUrl = `${baseUrl}?${queryParams.toString()}`;
 
     for (let i = 0; i < data.ads; i++) {
@@ -108,6 +111,7 @@ export default function Home() {
       });
     }
 
+    setRequestId(refreshId);
     setAdsUrls(urls);
   };
 
@@ -302,7 +306,7 @@ export default function Home() {
                         onClick={form.handleSubmit(handleGenerate)}
                       >
                         <Play className="w-5 h-5 mr-3 fill-current" />
-                        Generate Ads
+                        Request Ads
                       </Button>
                       
                     </div>
@@ -330,7 +334,7 @@ export default function Home() {
                       </div>
                       <h3 className="text-2xl font-bold tracking-tight">Ready for deployment</h3>
                       <p className="text-muted-foreground mt-2 max-w-sm text-center text-base">
-                        Your ad results will appear here after clicking <span className="font-bold text-foreground">Generate Ads</span>.
+                        Your ad results will appear here after clicking <span className="font-bold text-foreground">Request Ads</span>.
                       </p>
                     </div>
                   ) : (
