@@ -332,7 +332,7 @@ export default function Home() {
                       <div className="p-6 bg-primary/5 rounded-[2rem] mb-6 group-hover/preview:scale-110 transition-transform">
                         <LayoutGrid className="w-12 h-12 text-primary opacity-40" />
                       </div>
-                      <h3 className="text-2xl font-bold tracking-tight">Ready for deployment</h3>
+                      <h3 className="text-2xl font-bold tracking-tight">No preview available</h3>
                       <p className="text-muted-foreground mt-2 max-w-sm text-center text-base">
                         Your ad results will appear here after clicking <span className="font-bold text-foreground">Request Ads</span>.
                       </p>
